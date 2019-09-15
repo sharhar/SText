@@ -1,13 +1,15 @@
-//
-//  SText.h
-//  SText
-//
-//  Created by Shahar Sandhaus on 9/13/19.
-//
-
 #ifndef SText_h
 #define SText_h
 
+typedef struct SGlyph {
+	unsigned int width, height;
+	unsigned int bearingX, bearingY;
+	unsigned int advance;
+	char* data;
+} SGlyph;
+
 void stInit();
+
+
 
 #endif /* SText_h */

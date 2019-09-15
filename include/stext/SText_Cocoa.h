@@ -1,10 +1,3 @@
-//
-//  SText_Cocoa.h
-//  SText
-//
-//  Created by Shahar Sandhaus on 9/13/19.
-//
-
 #ifndef SText_Cocoa_h
 #define SText_Cocoa_h
 

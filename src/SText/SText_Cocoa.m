@@ -1,11 +1,5 @@
-//
-//  SText_Cocoa.m
-//  SText
-//
-//  Created by Shahar Sandhaus on 9/13/19.
-//
-
 #include <stext/SText.h>
+#include <stext/SText_internal.h>
 #include <stext/SText_Cocoa.h>
 
 @implementation AppDelegate
@@ -33,6 +27,25 @@
 }
 
 @end
+
+typedef struct TIFFImageHeaderRaw {
+	char ID[2];
+	char version[2];
+	char offsetOfImage[4];
+} TIFFImageHeaderRaw;
+
+typedef struct TIFFImageHeader {
+	char ID[2];
+	short version;
+	int offsetOfImage;
+} TIFFImageHeader;
+
+typedef struct TIFFImageData {
+	unsigned char r;
+	unsigned char g;
+	unsigned char b;
+	unsigned char a;
+}TIFFImageData;
 
 void stInit() {
 	int width = 300;
@@ -98,12 +111,12 @@ void stInit() {
 	[NSGraphicsContext saveGraphicsState];
 	[NSGraphicsContext setCurrentContext:context];
 	
-	//[[NSColor redColor] set];
-	//[NSBezierPath fillRect:NSMakeRect(10,10,40,40)];
+	[[NSColor redColor] set];
+	[NSBezierPath fillRect:NSMakeRect(0,height-10,20,10)];
 	
 	NSDictionary *attributes = [NSDictionary dictionaryWithObjectsAndKeys:[NSFont fontWithName:@"Helvetica" size:26], NSFontAttributeName,[NSColor blackColor], NSForegroundColorAttributeName, nil];
 	
-	NSAttributedString * currentText=[[NSAttributedString alloc] initWithString:@"Catç" attributes: attributes];
+	NSAttributedString * currentText=[[NSAttributedString alloc] initWithString:@"C|" attributes: attributes];
 	
 	NSSize attrSize = [currentText size];
 	[currentText drawAtPoint:NSMakePoint(40, 40)];
@@ -118,6 +131,36 @@ void stInit() {
 	[imageView setImage:image];
 	
 	[[window contentView] addSubview:imageView];
+	
+	NSData* imageData = [image TIFFRepresentation];
+	char* rawData = [imageData bytes];
+	unsigned int rawLength = [imageData length];
+	
+	TIFFImageHeaderRaw* imageHeaderRaw = (TIFFImageHeaderRaw*)rawData;
+	
+	TIFFImageHeaderRaw* imageHeaderFixed = malloc(sizeof(TIFFImageHeaderRaw));
+	
+	imageHeaderFixed->ID[0] = imageHeaderRaw->ID[0];
+	imageHeaderFixed->ID[1] = imageHeaderRaw->ID[1];
+	
+	imageHeaderFixed->version[0] = imageHeaderRaw->version[1];
+	imageHeaderFixed->version[1] = imageHeaderRaw->version[0];
+	
+	imageHeaderFixed->offsetOfImage[0] = imageHeaderRaw->offsetOfImage[3];
+	imageHeaderFixed->offsetOfImage[1] = imageHeaderRaw->offsetOfImage[2];
+	imageHeaderFixed->offsetOfImage[2] = imageHeaderRaw->offsetOfImage[1];
+	imageHeaderFixed->offsetOfImage[3] = imageHeaderRaw->offsetOfImage[0];
+	
+	TIFFImageHeader* imageHeader = (TIFFImageHeader*)imageHeaderFixed;
+	
+	printf("%s %d %d\n", imageHeader->ID, imageHeader->version, imageHeader->offsetOfImage);
+	
+	printf("%d x %d = %d\n", width, height, width * height);
+	printf("%d\n", rawLength);
+	
+	TIFFImageData* data = (TIFFImageData*)rawData+8;
+	
+	printf("%d %d %d %d\n", data[21].r, data[21].g, data[21].b, data[21].a);
 	
 	while (![[window delegate] getRunning]) {
 		@autoreleasepool {
