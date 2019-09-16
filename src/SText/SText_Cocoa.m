@@ -47,9 +47,106 @@ typedef struct TIFFImageData {
 	unsigned char a;
 }TIFFImageData;
 
-void stInit() {
-	int width = 300;
-	int height = 300;
+char** stGetAllFonts() {
+	//NSArray *fonts = [[NSFontManager sharedFontManager] availableFontFamilies];
+	
+	return 0;
+}
+
+SGlyph* getGlyph(NSFont* font, int fontSize, char character) {
+	int width = fontSize*3;
+	int height = fontSize*3;
+
+	NSBitmapImageRep *newRep = [[NSBitmapImageRep alloc] initWithBitmapDataPlanes:NULL
+																	   pixelsWide:width
+																	   pixelsHigh:height
+																	bitsPerSample:8
+																  samplesPerPixel:4
+																		 hasAlpha:YES
+																		 isPlanar:NO
+																   colorSpaceName:NSDeviceRGBColorSpace
+																	  bytesPerRow:4 * width
+																	 bitsPerPixel:32];
+	
+	NSGraphicsContext* context = [NSGraphicsContext graphicsContextWithBitmapImageRep:newRep];
+	
+	[NSGraphicsContext saveGraphicsState];
+	[NSGraphicsContext setCurrentContext:context];
+	
+	//[[NSColor redColor] set];
+	//[NSBezierPath fillRect:NSMakeRect(40,40,40,26)];
+	
+	NSDictionary *attributes = [NSDictionary dictionaryWithObjectsAndKeys:font, NSFontAttributeName,[NSColor blackColor], NSForegroundColorAttributeName, nil];
+	
+	char* string = malloc(sizeof(char) * 2);
+	string[0] = character;
+	string[1] = 0;
+	
+	NSAttributedString * currentText=[[NSAttributedString alloc] initWithString:@(string) attributes: attributes];
+	
+	//NSSize attrSize = [currentText size];
+	[currentText drawAtPoint:NSMakePoint(fontSize, height-2*fontSize)];
+	
+	[NSGraphicsContext restoreGraphicsState];
+	
+	NSImage* image = [[NSImage alloc] initWithSize:NSMakeSize(width, height)];
+	[image addRepresentation:newRep];
+	
+	NSData* imageData = [image TIFFRepresentation];
+	char* rawData = [imageData bytes];
+	//unsigned int rawLength = [imageData length];
+	
+	/*
+	TIFFImageHeaderRaw* imageHeaderRaw = (TIFFImageHeaderRaw*)rawData;
+	
+	TIFFImageHeaderRaw* imageHeaderFixed = malloc(sizeof(TIFFImageHeaderRaw));
+	
+	imageHeaderFixed->ID[0] = imageHeaderRaw->ID[0];
+	imageHeaderFixed->ID[1] = imageHeaderRaw->ID[1];
+	
+	imageHeaderFixed->version[0] = imageHeaderRaw->version[1];
+	imageHeaderFixed->version[1] = imageHeaderRaw->version[0];
+	
+	imageHeaderFixed->offsetOfImage[0] = imageHeaderRaw->offsetOfImage[3];
+	imageHeaderFixed->offsetOfImage[1] = imageHeaderRaw->offsetOfImage[2];
+	imageHeaderFixed->offsetOfImage[2] = imageHeaderRaw->offsetOfImage[1];
+	imageHeaderFixed->offsetOfImage[3] = imageHeaderRaw->offsetOfImage[0];
+	
+	TIFFImageHeader* imageHeader = (TIFFImageHeader*)imageHeaderFixed;
+	
+	printf("%s %d %d\n", imageHeader->ID, imageHeader->version, imageHeader->offsetOfImage);
+	
+	printf("%d x %d = %d\n", width, height, width * height);
+	printf("%d\n", rawLength);
+	
+	TIFFImageData* data = (TIFFImageData*)rawData+8;
+	
+	printf("%d %d %d %d\n", data[21].r, data[21].g, data[21].b, data[21].a);
+	*/
+	
+	_SRawGlyphData* rawGlyphData = malloc(sizeof(_SRawGlyphData));
+	
+	rawGlyphData->fontSize = fontSize;
+	rawGlyphData->width = width;
+	rawGlyphData->height = height;
+	rawGlyphData->originX = fontSize;
+	rawGlyphData->originY = fontSize;
+	rawGlyphData->data = rawData+8;
+	
+	return __stCreateGlyph(rawGlyphData);
+}
+
+SFont* stCreateFont(char* fontFamily, int fontSize) {
+	//int width = 300;
+	//int height = 300;
+	
+	
+
+	SGlyph* image = (SGlyph*)getGlyph([NSFont fontWithName:@(fontFamily) size:fontSize], fontSize, 'A');
+	
+	return image;
+	
+	/*
 	char* title = "SText-Test";
 	
 	NSUInteger windowStyle = NSWindowStyleMaskTitled  | NSWindowStyleMaskClosable | NSWindowStyleMaskResizable | NSWindowStyleMaskMiniaturizable;
@@ -78,89 +175,11 @@ void stInit() {
 	
 	[window makeKeyAndOrderFront:nil];
 	
-	//[window setBackgroundColor:NSColor.whiteColor];
-	
-	//[[window contentView] lockFocus];
-	
-	//[[NSColor redColor] set];
-	//[NSBezierPath fillRect:NSMakeRect(0,0,4,4)];
-	
-	//[[window contentView] unlockFocus];
-	//[[window contentView] setNeedsDisplay:YES];
-	
-	//NSArray *fonts = [[NSFontManager sharedFontManager] availableFontFamilies];
-	
-	NSFont* font = [[NSFontManager sharedFontManager] fontWithFamily:@"Arial"
-															  traits:0
-															  weight:5
-																size:12];
-	
-	NSBitmapImageRep *newRep = [[NSBitmapImageRep alloc] initWithBitmapDataPlanes:NULL
-																	   pixelsWide:width
-																	   pixelsHigh:height
-																	bitsPerSample:8
-																  samplesPerPixel:4
-																		 hasAlpha:YES
-																		 isPlanar:NO
-																   colorSpaceName:NSDeviceRGBColorSpace
-																	  bytesPerRow:4 * width
-																	 bitsPerPixel:32];
-	
-	NSGraphicsContext* context = [NSGraphicsContext graphicsContextWithBitmapImageRep:newRep];
-	
-	[NSGraphicsContext saveGraphicsState];
-	[NSGraphicsContext setCurrentContext:context];
-	
-	[[NSColor redColor] set];
-	[NSBezierPath fillRect:NSMakeRect(0,height-10,20,10)];
-	
-	NSDictionary *attributes = [NSDictionary dictionaryWithObjectsAndKeys:[NSFont fontWithName:@"Helvetica" size:26], NSFontAttributeName,[NSColor blackColor], NSForegroundColorAttributeName, nil];
-	
-	NSAttributedString * currentText=[[NSAttributedString alloc] initWithString:@"C|" attributes: attributes];
-	
-	NSSize attrSize = [currentText size];
-	[currentText drawAtPoint:NSMakePoint(40, 40)];
-	
-	[NSGraphicsContext restoreGraphicsState];
-	
-	NSImage* image = [[NSImage alloc] initWithSize:NSMakeSize(width, height)];
-	[image addRepresentation:newRep];
-	
 	NSImageView* imageView = [[NSImageView alloc] init];
 	[imageView setFrame:NSMakeRect(0, 0, width, height)];
 	[imageView setImage:image];
 	
 	[[window contentView] addSubview:imageView];
-	
-	NSData* imageData = [image TIFFRepresentation];
-	char* rawData = [imageData bytes];
-	unsigned int rawLength = [imageData length];
-	
-	TIFFImageHeaderRaw* imageHeaderRaw = (TIFFImageHeaderRaw*)rawData;
-	
-	TIFFImageHeaderRaw* imageHeaderFixed = malloc(sizeof(TIFFImageHeaderRaw));
-	
-	imageHeaderFixed->ID[0] = imageHeaderRaw->ID[0];
-	imageHeaderFixed->ID[1] = imageHeaderRaw->ID[1];
-	
-	imageHeaderFixed->version[0] = imageHeaderRaw->version[1];
-	imageHeaderFixed->version[1] = imageHeaderRaw->version[0];
-	
-	imageHeaderFixed->offsetOfImage[0] = imageHeaderRaw->offsetOfImage[3];
-	imageHeaderFixed->offsetOfImage[1] = imageHeaderRaw->offsetOfImage[2];
-	imageHeaderFixed->offsetOfImage[2] = imageHeaderRaw->offsetOfImage[1];
-	imageHeaderFixed->offsetOfImage[3] = imageHeaderRaw->offsetOfImage[0];
-	
-	TIFFImageHeader* imageHeader = (TIFFImageHeader*)imageHeaderFixed;
-	
-	printf("%s %d %d\n", imageHeader->ID, imageHeader->version, imageHeader->offsetOfImage);
-	
-	printf("%d x %d = %d\n", width, height, width * height);
-	printf("%d\n", rawLength);
-	
-	TIFFImageData* data = (TIFFImageData*)rawData+8;
-	
-	printf("%d %d %d %d\n", data[21].r, data[21].g, data[21].b, data[21].a);
 	
 	while (![[window delegate] getRunning]) {
 		@autoreleasepool {
@@ -181,4 +200,5 @@ void stInit() {
 	
 	[window close];
 	[window dealloc];
+	 */
 }

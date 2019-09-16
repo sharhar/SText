@@ -8,7 +8,12 @@ typedef struct SGlyph {
 	char* data;
 } SGlyph;
 
-void stInit();
+typedef struct SFont {
+	SGlyph* glyphs;
+} SFont;
+
+char** stGetAllFonts();
+SFont* stCreateFont(char* fontFamily, int fontSize);
 
 
 
