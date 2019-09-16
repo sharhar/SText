@@ -6,15 +6,16 @@ typedef struct SGlyph {
 	unsigned int bearingX, bearingY;
 	unsigned int advance;
 	char* data;
+	
+	unsigned int GLTexID;
 } SGlyph;
 
 typedef struct SFont {
-	SGlyph* glyphs;
+	SGlyph** glyphs;
 } SFont;
 
 char** stGetAllFonts();
 SFont* stCreateFont(char* fontFamily, int fontSize);
-
-
+void stFontInitGL(SFont* font);
 
 #endif /* SText_h */

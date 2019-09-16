@@ -53,7 +53,7 @@ char** stGetAllFonts() {
 	return 0;
 }
 
-SGlyph* getGlyph(NSFont* font, int fontSize, char character) {
+SGlyph* getGlyph(NSFont* font, int fontSize, char* character) {
 	int width = fontSize*3;
 	int height = fontSize*3;
 
@@ -73,18 +73,10 @@ SGlyph* getGlyph(NSFont* font, int fontSize, char character) {
 	[NSGraphicsContext saveGraphicsState];
 	[NSGraphicsContext setCurrentContext:context];
 	
-	//[[NSColor redColor] set];
-	//[NSBezierPath fillRect:NSMakeRect(40,40,40,26)];
-	
 	NSDictionary *attributes = [NSDictionary dictionaryWithObjectsAndKeys:font, NSFontAttributeName,[NSColor blackColor], NSForegroundColorAttributeName, nil];
 	
-	char* string = malloc(sizeof(char) * 2);
-	string[0] = character;
-	string[1] = 0;
+	NSAttributedString * currentText=[[NSAttributedString alloc] initWithString:@(character) attributes: attributes];
 	
-	NSAttributedString * currentText=[[NSAttributedString alloc] initWithString:@(string) attributes: attributes];
-	
-	//NSSize attrSize = [currentText size];
 	[currentText drawAtPoint:NSMakePoint(fontSize, height-2*fontSize)];
 	
 	[NSGraphicsContext restoreGraphicsState];
@@ -94,36 +86,7 @@ SGlyph* getGlyph(NSFont* font, int fontSize, char character) {
 	
 	NSData* imageData = [image TIFFRepresentation];
 	char* rawData = [imageData bytes];
-	//unsigned int rawLength = [imageData length];
-	
-	/*
-	TIFFImageHeaderRaw* imageHeaderRaw = (TIFFImageHeaderRaw*)rawData;
-	
-	TIFFImageHeaderRaw* imageHeaderFixed = malloc(sizeof(TIFFImageHeaderRaw));
-	
-	imageHeaderFixed->ID[0] = imageHeaderRaw->ID[0];
-	imageHeaderFixed->ID[1] = imageHeaderRaw->ID[1];
-	
-	imageHeaderFixed->version[0] = imageHeaderRaw->version[1];
-	imageHeaderFixed->version[1] = imageHeaderRaw->version[0];
-	
-	imageHeaderFixed->offsetOfImage[0] = imageHeaderRaw->offsetOfImage[3];
-	imageHeaderFixed->offsetOfImage[1] = imageHeaderRaw->offsetOfImage[2];
-	imageHeaderFixed->offsetOfImage[2] = imageHeaderRaw->offsetOfImage[1];
-	imageHeaderFixed->offsetOfImage[3] = imageHeaderRaw->offsetOfImage[0];
-	
-	TIFFImageHeader* imageHeader = (TIFFImageHeader*)imageHeaderFixed;
-	
-	printf("%s %d %d\n", imageHeader->ID, imageHeader->version, imageHeader->offsetOfImage);
-	
-	printf("%d x %d = %d\n", width, height, width * height);
-	printf("%d\n", rawLength);
-	
-	TIFFImageData* data = (TIFFImageData*)rawData+8;
-	
-	printf("%d %d %d %d\n", data[21].r, data[21].g, data[21].b, data[21].a);
-	*/
-	
+
 	_SRawGlyphData* rawGlyphData = malloc(sizeof(_SRawGlyphData));
 	
 	rawGlyphData->fontSize = fontSize;
@@ -137,68 +100,21 @@ SGlyph* getGlyph(NSFont* font, int fontSize, char character) {
 }
 
 SFont* stCreateFont(char* fontFamily, int fontSize) {
-	//int width = 300;
-	//int height = 300;
+	SFont* result = malloc(sizeof(SFont));
 	
+	NSFont* nsFont = [NSFont fontWithName:@(fontFamily) size:fontSize];
 	
-
-	SGlyph* image = (SGlyph*)getGlyph([NSFont fontWithName:@(fontFamily) size:fontSize], fontSize, 'A');
+	result->glyphs = malloc(sizeof(SGlyph)*255);
 	
-	return image;
+	char* string = malloc(sizeof(char) * 2);
+	string[1]=0;
 	
-	/*
-	char* title = "SText-Test";
-	
-	NSUInteger windowStyle = NSWindowStyleMaskTitled  | NSWindowStyleMaskClosable | NSWindowStyleMaskResizable | NSWindowStyleMaskMiniaturizable;
-	
-	NSRect screenRect = [[NSScreen mainScreen] frame];
-	NSRect viewRect = NSMakeRect(0, 0, width, height);
-	NSRect windowRect = NSMakeRect(NSMidX(screenRect) - NSMidX(viewRect),
-								   NSMidY(screenRect) - NSMidY(viewRect),
-								   viewRect.size.width,
-								   viewRect.size.height);
-	
-	NSWindow* window = [[NSWindow alloc] initWithContentRect:windowRect
-												   styleMask:windowStyle
-													 backing:NSBackingStoreBuffered
-													   defer:NO];
-	
-	[NSApp setActivationPolicy:NSApplicationActivationPolicyRegular];
-	
-	[window setDelegate:(AppDelegate*)[NSApp delegate]];
-	[window setAcceptsMouseMovedEvents:YES];
-	
-	[window setTitle:@(title)];
-	
-	[window setContentView:[[NSView alloc] initWithFrame:viewRect]];
-	[[window contentView] setWantsLayer:YES];
-	
-	[window makeKeyAndOrderFront:nil];
-	
-	NSImageView* imageView = [[NSImageView alloc] init];
-	[imageView setFrame:NSMakeRect(0, 0, width, height)];
-	[imageView setImage:image];
-	
-	[[window contentView] addSubview:imageView];
-	
-	while (![[window delegate] getRunning]) {
-		@autoreleasepool {
-			NSEvent* ev;
-			do {
-				ev = [NSApp nextEventMatchingMask: NSEventMaskAny
-										untilDate: nil
-										   inMode: NSDefaultRunLoopMode
-										  dequeue: YES];
-				
-				if (ev) {
-					
-					[NSApp sendEvent: ev];
-				}
-			} while (ev);
-		}
+	for(unsigned char c = 33; c < 127; c++) {
+		string[0]=c;
+		result->glyphs[c] = getGlyph(nsFont, fontSize, string);
 	}
 	
-	[window close];
-	[window dealloc];
-	 */
+	result->glyphs[' '] = getGlyph(nsFont, fontSize, "H H");
+	
+	return  result;
 }

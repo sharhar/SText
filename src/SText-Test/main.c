@@ -9,39 +9,15 @@ int main() {
 	glfwSwapInterval(1);
 	glfwMakeContextCurrent(window);
 
-	SGlyph* glyph = stCreateFont("Helvetica", 206);
+	SFont* font = stCreateFont("Helvetica", 300);
 	
 	glEnable(GL_TEXTURE_2D);
 	
-	GLuint tex;
-	glGenTextures(1, &tex);
-	glBindTexture(GL_TEXTURE_2D, tex);
-	
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	
-	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-	
-	printf("%d\n", glGetError());
-	
-	glTexImage2D(
-				 GL_TEXTURE_2D,
-				 0,
-				 GL_RGBA,
-				 glyph->width,
-				 glyph->height,
-				 0,
-				 GL_RGBA,
-				 GL_UNSIGNED_BYTE,
-				 glyph->data
-				 );
-	
-	printf("%d\n", glGetError());
+	stFontInitGL(font);
 	
 	glClearColor(1, 0, 1, 1);
+	
+	glBindTexture(GL_TEXTURE_2D, font->glyphs[' ']->GLTexID);
 	
 	while(!glfwWindowShouldClose(window)) {
 		glfwPollEvents();
