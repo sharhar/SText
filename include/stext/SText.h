@@ -14,8 +14,14 @@ typedef struct SFont {
 	SGlyph** glyphs;
 } SFont;
 
+typedef void* (*stPfnGetProdAdress)(char* name);
+
+void stInit(stPfnGetProdAdress gl_func);
+
 char** stGetAllFonts();
 SFont* stCreateFont(char* fontFamily, int fontSize);
 void stFontInitGL(SFont* font);
+
+void stRenderText(SFont* font, const char* text);
 
 #endif /* SText_h */

@@ -1,7 +1,7 @@
 #include <stext/SText.h>
 #include <stext/SText_internal.h>
 
-#include <GLFW/glfw3.h>
+//#include <GLFW/glfw3.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -67,18 +67,18 @@ SGlyph* __stCreateGlyph(_SRawGlyphData* rawData) {
 
 void stFontInitGL(SFont* font) {
 	for(int i = 33; i < 127; i++) {
-		glGenTextures(1, &font->glyphs[i]->GLTexID);
-		glBindTexture(GL_TEXTURE_2D, font->glyphs[i]->GLTexID);
+		__glGenTextures(1, &font->glyphs[i]->GLTexID);
+		__glBindTexture(GL_TEXTURE_2D, font->glyphs[i]->GLTexID);
 		
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		__glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		__glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 		
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		__glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		__glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		
-		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+		__glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 		
-		glTexImage2D(
+		__glTexImage2D(
 					 GL_TEXTURE_2D,
 					 0,
 					 GL_RGBA,
@@ -91,18 +91,18 @@ void stFontInitGL(SFont* font) {
 					 );
 	}
 	
-	glGenTextures(1, &font->glyphs[' ']->GLTexID);
-	glBindTexture(GL_TEXTURE_2D, font->glyphs[' ']->GLTexID);
+	__glGenTextures(1, &font->glyphs[' ']->GLTexID);
+	__glBindTexture(GL_TEXTURE_2D, font->glyphs[' ']->GLTexID);
 	
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	__glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	__glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	__glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	__glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	
-	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+	__glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 	
-	glTexImage2D(
+	__glTexImage2D(
 				 GL_TEXTURE_2D,
 				 0,
 				 GL_RGBA,
@@ -114,5 +114,5 @@ void stFontInitGL(SFont* font) {
 				 font->glyphs[' ']->data
 				 );
 	
-	glBindTexture(GL_TEXTURE_2D, 0);
+	__glBindTexture(GL_TEXTURE_2D, 0);
 }
