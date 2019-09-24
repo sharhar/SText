@@ -37,15 +37,28 @@ typedef void (*pfnGlTexImage2D)(unsigned int target, int level, int internalform
 
 typedef void (*pfnGlGenVertexArrays)(int n, unsigned int *arrays);
 typedef void (*pfnGlBindVertexArray)(unsigned int array);
-
 typedef void (*pfnGlGenBuffers)(int n, unsigned int *buffers);
 typedef void (*pfnGlBindBuffer)(unsigned int target, unsigned int buffer);
 typedef void (*pfnGlBufferData)(unsigned int target, signed long int size, const void *data, unsigned int usage);
 typedef void (*pfnGlVertexAttribPointer)(unsigned int index, int size, unsigned int type, unsigned char normalized, int stride, const void *pointer);
 
+typedef unsigned int (*pfnGlCreateShader)(unsigned int type);
+typedef unsigned int (*pfnGlCreateProgram)(void);
+typedef void (*pfnGlShaderSource)(unsigned int shader, int count, const char *const*string, const int *length);
+typedef void (*pfnGlCompileShader)(unsigned int shader);
+typedef void (*pfnGlGetShaderiv)(unsigned int shader, unsigned int pname, int *params);
+typedef void (*pfnGlGetShaderInfoLog)(unsigned int shader, int bufSize, int *length, char *infoLog);
+typedef void (*pfnGlAttachShader)(unsigned int program, unsigned int shader);
+typedef void (*pfnGlBindAttribLocation)(unsigned int program, unsigned int index, const char *name);
+typedef void (*pfnGlLinkProgram)(unsigned int program);
+typedef void (*pfnGlValidateProgram)(unsigned int program);
+typedef void (*pfnGlUseProgram)(unsigned int program);
+typedef int (*pfnGlGetUniformLocation)(unsigned int program, const char *name);
+typedef void (*pfnGlDeleteProgram)(unsigned int program);
+typedef void (*pfnGlDeleteShader)(unsigned int shader);
+
 typedef void (*pfnGlEnableVertexAttribArray)(unsigned int index);
 typedef void (*pfnGlDrawArrays)(unsigned int mode, int first, int count);
-typedef void (*pfnGlDrawElements)(unsigned int mode, int count, unsigned int type, const void *indices);
 
 extern pfnGlGenTextures __glGenTextures;
 extern pfnGlBindTexture __glBindTexture;
@@ -60,10 +73,26 @@ extern pfnGlBindBuffer __glBindBuffer;
 extern pfnGlBufferData __glBufferData;
 extern pfnGlVertexAttribPointer __glVertexAttribPointer;
 
+extern pfnGlCreateShader __glCreateShader;
+extern pfnGlCreateProgram __glCreateProgram;
+extern pfnGlShaderSource __glShaderSource;
+extern pfnGlCompileShader __glCompileShader;
+extern pfnGlGetShaderiv __glGetShaderiv;
+extern pfnGlGetShaderInfoLog __glGetShaderInfoLog;
+extern pfnGlAttachShader __glAttachShader;
+extern pfnGlBindAttribLocation __glBindAttribLocation;
+extern pfnGlLinkProgram __glLinkProgram;
+extern pfnGlValidateProgram __glValidateProgram;
+extern pfnGlUseProgram __glUseProgram;
+extern pfnGlGetUniformLocation __glGetUniformLocation;
+extern pfnGlDeleteProgram __glDeleteProgram;
+extern pfnGlDeleteShader __glDeleteShader;
+
 extern pfnGlEnableVertexAttribArray __glEnableVertexAttribArray;
 extern pfnGlDrawArrays __glDrawArrays;
-extern pfnGlDrawElements __glDrawElements;
 
+#define GL_FALSE 0
+#define GL_TRUE 1
 #define GL_TRIANGLES 0x0004
 #define GL_UNPACK_ALIGNMENT 0x0CF5
 #define GL_TEXTURE_2D 0x0DE1
@@ -78,5 +107,9 @@ extern pfnGlDrawElements __glDrawElements;
 #define GL_CLAMP_TO_EDGE 0x812F
 #define GL_ARRAY_BUFFER 0x8892
 #define GL_STATIC_DRAW 0x88E4
+#define GL_FRAGMENT_SHADER 0x8B30
+#define GL_VERTEX_SHADER 0x8B31
+#define GL_COMPILE_STATUS 0x8B81
+#define GL_INFO_LOG_LENGTH 0x8B84
 
 #endif /* SText_internal_h */
