@@ -13,7 +13,7 @@ int main() {
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	GLFWwindow* window = glfwCreateWindow(800, 600, "SText-Test", NULL, NULL);
 	
-	SFont* font = stCreateFont("Helvetica", 300);
+	SFont* font = stCreateFont("Helvetica", 100);
 	
 	glfwSwapInterval(1);
 	glfwMakeContextCurrent(window);
@@ -22,18 +22,21 @@ int main() {
 	
 	stInit(glfwGetProcAddress);
 	
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	
 	stFontInitGL(font);
 	
-	glClearColor(1, 0, 1, 1);
-	
-	glBindTexture(GL_TEXTURE_2D, font->glyphs[' ']->GLTexID);
+	glClearColor(0, 0, 0, 1);
 	
 	while(!glfwWindowShouldClose(window)) {
 		glfwPollEvents();
 		
 		glClear(GL_COLOR_BUFFER_BIT);
 		
-		stRenderText(font, "test");
+		//stRenderText(font, "testing", 100, 100);
+		
+		stRenderText(font, "The quick brown\nfox jumped over\nthe lazy dog", 50, 300);
 		
 		glfwSwapBuffers(window);
 	}

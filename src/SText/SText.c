@@ -6,6 +6,7 @@ pfnGlBindTexture __glBindTexture = 0;
 pfnGlTexParameteri __glTexParameteri = 0;
 pfnGlPixelStorei __glPixelStorei = 0;
 pfnGlTexImage2D __glTexImage2D = 0;
+pfnGlActiveTexture __glActiveTexture = 0;
 
 pfnGlGenVertexArrays __glGenVertexArrays = 0;
 pfnGlBindVertexArray __glBindVertexArray = 0;
@@ -29,6 +30,8 @@ pfnGlGetUniformLocation __glGetUniformLocation = 0;
 pfnGlDeleteProgram __glDeleteProgram = 0;
 pfnGlDeleteShader __glDeleteShader = 0;
 
+pfnGlUniform4f __glUniform4f = 0;
+
 pfnGlEnableVertexAttribArray __glEnableVertexAttribArray = 0;
 pfnGlDrawArrays __glDrawArrays = 0;
 
@@ -38,6 +41,7 @@ void stInit(stPfnGetProdAdress gl_func) {
 	__glTexParameteri = gl_func("glTexParameteri");
 	__glPixelStorei = gl_func("glPixelStorei");
 	__glTexImage2D = gl_func("glTexImage2D");
+	__glActiveTexture = gl_func("glActiveTexture");
 	
 	__glGenVertexArrays = gl_func("glGenVertexArrays");
 	__glBindVertexArray = gl_func("glBindVertexArray");
@@ -60,6 +64,8 @@ void stInit(stPfnGetProdAdress gl_func) {
 	__glGetUniformLocation = gl_func("glGetUniformLocation");
 	__glDeleteProgram = gl_func("glDeleteProgram");
 	__glDeleteShader = gl_func("glDeleteShader");
+	
+	__glUniform4f = gl_func("glUniform4f");
 	
 	__glEnableVertexAttribArray = gl_func("glEnableVertexAttribArray");
 	__glDrawArrays = gl_func("glDrawArrays");

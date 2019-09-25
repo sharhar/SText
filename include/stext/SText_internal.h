@@ -21,6 +21,7 @@ typedef struct _SRawGlyphData {
 	int width, height;
 	int originX, originY;
 	int fontSize;
+	char c;
 	
 	SPixel* data;
 } _SRawGlyphData;
@@ -34,6 +35,7 @@ typedef void (*pfnGlBindTexture)(unsigned int target, unsigned int texture);
 typedef void (*pfnGlTexParameteri)(unsigned int target, unsigned int pname, const int *params);
 typedef void (*pfnGlPixelStorei)(unsigned int pname, int param);
 typedef void (*pfnGlTexImage2D)(unsigned int target, int level, int internalformat, int width, int height, int border, unsigned int format, unsigned int type, const void *pixels);
+typedef void (*pfnGlActiveTexture)(unsigned int texture);
 
 typedef void (*pfnGlGenVertexArrays)(int n, unsigned int *arrays);
 typedef void (*pfnGlBindVertexArray)(unsigned int array);
@@ -57,6 +59,8 @@ typedef int (*pfnGlGetUniformLocation)(unsigned int program, const char *name);
 typedef void (*pfnGlDeleteProgram)(unsigned int program);
 typedef void (*pfnGlDeleteShader)(unsigned int shader);
 
+typedef void (*pfnGlUniform4f)(int location, float v0, float v1, float v2, float v3);
+
 typedef void (*pfnGlEnableVertexAttribArray)(unsigned int index);
 typedef void (*pfnGlDrawArrays)(unsigned int mode, int first, int count);
 
@@ -65,6 +69,7 @@ extern pfnGlBindTexture __glBindTexture;
 extern pfnGlTexParameteri __glTexParameteri;
 extern pfnGlPixelStorei __glPixelStorei;
 extern pfnGlTexImage2D __glTexImage2D;
+extern pfnGlActiveTexture __glActiveTexture;
 
 extern pfnGlGenVertexArrays __glGenVertexArrays;
 extern pfnGlBindVertexArray __glBindVertexArray;
@@ -88,6 +93,8 @@ extern pfnGlGetUniformLocation __glGetUniformLocation;
 extern pfnGlDeleteProgram __glDeleteProgram;
 extern pfnGlDeleteShader __glDeleteShader;
 
+extern pfnGlUniform4f __glUniform4f;
+
 extern pfnGlEnableVertexAttribArray __glEnableVertexAttribArray;
 extern pfnGlDrawArrays __glDrawArrays;
 
@@ -98,6 +105,7 @@ extern pfnGlDrawArrays __glDrawArrays;
 #define GL_TEXTURE_2D 0x0DE1
 #define GL_UNSIGNED_BYTE 0x1401
 #define GL_FLOAT 0x1406
+#define GL_RED 0x1903
 #define GL_RGBA 0x1908
 #define GL_LINEAR 0x2601
 #define GL_TEXTURE_MAG_FILTER 0x2800
@@ -105,6 +113,7 @@ extern pfnGlDrawArrays __glDrawArrays;
 #define GL_TEXTURE_WRAP_S 0x2802
 #define GL_TEXTURE_WRAP_T 0x2803
 #define GL_CLAMP_TO_EDGE 0x812F
+#define GL_TEXTURE0 0x84C0
 #define GL_ARRAY_BUFFER 0x8892
 #define GL_STATIC_DRAW 0x88E4
 #define GL_FRAGMENT_SHADER 0x8B30

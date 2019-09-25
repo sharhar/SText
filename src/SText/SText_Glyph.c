@@ -37,7 +37,7 @@ SGlyph* __stCreateGlyph(_SRawGlyphData* rawData) {
 		}
 	}
 	
-	//printf("%d %d %d %d\n", boundsX, boundsY, boundsX2, boundsY2);
+	//printf("%c %d %d %d %d\n", rawData->c, boundsX, boundsY, boundsX2, boundsY2);
 	
 	result->width = boundsX2 - boundsX;
 	result->height = boundsY2 - boundsY;
@@ -48,17 +48,17 @@ SGlyph* __stCreateGlyph(_SRawGlyphData* rawData) {
 	
 	result->bearingX = boundsX - rawData->originX;
 	result->bearingY = boundsY - rawData->originY;
-	result->advance = result->width + 2;
-	result->data = malloc(sizeof(char) * result->width * result->height * 4);
+	result->advance = result->width + result->bearingX;
+	result->data = malloc(sizeof(char) * result->width * result->height);
 	
 	//memset(result->data, 0, sizeof(char) * result->width * result->height * 4);
 	
 	for(int y = 0; y < result->height; y++) {
 		for(int x = 0; x < result->width; x++) {
-			result->data[(y*result->width + x)*4 + 0] = rawData->data[(y + boundsY)*rawData->width + (x + boundsX)].a;
-			result->data[(y*result->width + x)*4 + 1] = rawData->data[(y + boundsY)*rawData->width + (x + boundsX)].a;
-			result->data[(y*result->width + x)*4 + 2] = rawData->data[(y + boundsY)*rawData->width + (x + boundsX)].a;
-			result->data[(y*result->width + x)*4 + 3] = rawData->data[(y + boundsY)*rawData->width + (x + boundsX)].a;
+			result->data[(int)(y*result->width + x)] = rawData->data[(y + boundsY)*rawData->width + (x + boundsX)].a;
+			//result->data[(int)(y*result->width + x)*4 + 1] = rawData->data[(y + boundsY)*rawData->width + (x + boundsX)].a;
+			//result->data[(int)(y*result->width + x)*4 + 2] = rawData->data[(y + boundsY)*rawData->width + (x + boundsX)].a;
+			//result->data[(int)(y*result->width + x)*4 + 3] = rawData->data[(y + boundsY)*rawData->width + (x + boundsX)].a;
 		}
 	}
 	
@@ -85,7 +85,7 @@ void stFontInitGL(SFont* font) {
 					 font->glyphs[i]->width,
 					 font->glyphs[i]->height,
 					 0,
-					 GL_RGBA,
+					 GL_RED,
 					 GL_UNSIGNED_BYTE,
 					 font->glyphs[i]->data
 					 );

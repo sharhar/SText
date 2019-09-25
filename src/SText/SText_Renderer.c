@@ -18,25 +18,28 @@ unsigned int __vertShader;
 unsigned int __fragShader;
 unsigned int __shaderProgram;
 
+unsigned int __screenLoc;
+unsigned int __transLoc;
+
 void __stInitRenderer() {
 	float vects[] = {
-		-0.5f,-0.5f,
-		 0.5f,-0.5f,
-		 0.5f, 0.5f,
+		0, 0,
+		1, 0,
+		1, 1,
 		
-		-0.5f,-0.5f,
-		 0.5f, 0.5f,
-		-0.5f, 0.5f
+		0, 0,
+		1, 1,
+		0, 1
 	};
 	
 	float texcoords[] = {
-		-1,-1,
-		 1,-1,
-		 1, 1,
+		0, 1,
+		1, 1,
+		1, 0,
 		
-		-1,-1,
-		 1, 1,
-		-1, 1
+		0, 1,
+		1, 0,
+		0, 0
 	};
 	
 	__glGenVertexArrays(1, &__rectVAO);
@@ -56,23 +59,28 @@ void __stInitRenderer() {
 	
 	__glBindVertexArray(0);
 	
-	char* vertSource = "\
+	const char* vertSource = "\
 	#version 330 core\n\
 	in vec2 position;\n\
 	in vec2 texcoord;\n\
 	out vec2 texcoord_out;\n\
+	uniform vec4 screen;\n\
+	uniform vec4 trans;\n\
 	void main(void) {\n\
-	gl_Position = vec4(position.x, position.y, 0, 1);\n\
+	vec2 translated_coords = vec2(trans.x + position.x*trans.z, trans.y + position.y*trans.w);\
+	gl_Position = vec4(2*translated_coords.x/screen.x - 1, 2*translated_coords.y/screen.y - 1, 0, 1);\n\
 	texcoord_out = texcoord;\n\
 	}\n";
 	
-	char* fragSource = "\
+	const char* fragSource = "\
 	#version 330 core\n\
 	out vec4 out_color;\n\
 	uniform sampler2D tex;\n\
 	in vec2 texcoord_out;\n\
 	void main(void) {\n\
-	out_color = vec4(texcoord_out.x, texcoord_out.y, 0, 1.0);//texture(tex, texcoord_out);\n\
+	float alpha = texture(tex, texcoord_out).r;\n\
+	//if(alpha < 0.5) {discard;}\n\
+	out_color = vec4(1, 1, 1, alpha);\n\
 	}\n";
 	
 	__vertShader = __glCreateShader(GL_VERTEX_SHADER);
@@ -97,7 +105,7 @@ void __stInitRenderer() {
 		printf("%s\n", message);
 		
 		free(message);
-		return NULL;
+		return;
 	}
 	
 	__glCompileShader(__fragShader);
@@ -114,7 +122,7 @@ void __stInitRenderer() {
 		printf("%s\n", message);
 		
 		free(message);
-		return NULL;
+		return;
 	}
 	
 	__glAttachShader(__shaderProgram, __vertShader);
@@ -128,12 +136,15 @@ void __stInitRenderer() {
 	
 	__glUseProgram(__shaderProgram);
 	
-	//result->uniformLocs[i] = glGetUniformLocation(result->program, uniforms[i]);
+	__screenLoc = __glGetUniformLocation(__shaderProgram, "screen");
+	__transLoc = __glGetUniformLocation(__shaderProgram, "trans");
+	
+	__glUniform4f(__screenLoc, 800, 600, 0, 0);
 	
 	__glUseProgram(0);
 }
 
-void stRenderText(SFont* font, const char* text) {
+void stRenderText(SFont* font, const char* text, float posx, float posy) {
 	__glBindVertexArray(__rectVAO);
 	
 	__glEnableVertexAttribArray(0);
@@ -141,7 +152,39 @@ void stRenderText(SFont* font, const char* text) {
 	
 	__glUseProgram(__shaderProgram);
 	
-	__glDrawArrays(GL_TRIANGLES, 0, 6);
+	float xOff = 0;
+	float yOff = 0;
+	
+	SGlyph* glyph = 0;
+	
+	for (int i = 0; text[i] != 0; i ++) {
+		if(text[i] == ' ') {
+			xOff += font->spaceWidth;
+			continue;
+		}
+		
+		if(text[i] == '\n') {
+			yOff += font->size;
+			xOff = 0;
+			continue;
+		}
+		
+		glyph = font->glyphs[(int)text[i]];
+		
+		__glActiveTexture(GL_TEXTURE0);
+		__glBindTexture(GL_TEXTURE_2D, glyph->GLTexID);
+		
+		float x = xOff + posx + glyph->bearingX;
+		float y = posy + (font->size - glyph->bearingY - glyph->height) - yOff;
+		
+		//printf("%f %f %f\n", x, y, glyph->bearingX);
+		
+		__glUniform4f(__transLoc, x, y, glyph->width, glyph->height);
+		
+		__glDrawArrays(GL_TRIANGLES, 0, 6);
+		
+		xOff += glyph->advance;
+	}
 	
 	__glUseProgram(0);
 	

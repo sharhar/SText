@@ -95,6 +95,7 @@ SGlyph* getGlyph(NSFont* font, int fontSize, char* character) {
 	rawGlyphData->originX = fontSize;
 	rawGlyphData->originY = fontSize;
 	rawGlyphData->data = rawData+8;
+	rawGlyphData->c = character[0];
 	
 	return __stCreateGlyph(rawGlyphData);
 }
@@ -115,6 +116,12 @@ SFont* stCreateFont(char* fontFamily, int fontSize) {
 	}
 	
 	result->glyphs[' '] = getGlyph(nsFont, fontSize, "H H");
+	
+	result->spaceWidth = result->glyphs[' ']->width - 2*result->glyphs['H']->width;
+	
+	result->size = fontSize;
+	
+	printf("space: %f\n", result->spaceWidth);
 	
 	return  result;
 }

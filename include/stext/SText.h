@@ -2,9 +2,9 @@
 #define SText_h
 
 typedef struct SGlyph {
-	unsigned int width, height;
-	unsigned int bearingX, bearingY;
-	unsigned int advance;
+	float width, height;
+	float bearingX, bearingY;
+	float advance;
 	char* data;
 	
 	unsigned int GLTexID;
@@ -12,6 +12,8 @@ typedef struct SGlyph {
 
 typedef struct SFont {
 	SGlyph** glyphs;
+	int size;
+	float spaceWidth;
 } SFont;
 
 typedef void* (*stPfnGetProdAdress)(char* name);
@@ -22,6 +24,6 @@ char** stGetAllFonts();
 SFont* stCreateFont(char* fontFamily, int fontSize);
 void stFontInitGL(SFont* font);
 
-void stRenderText(SFont* font, const char* text);
+void stRenderText(SFont* font, const char* text, float posx, float posy);
 
 #endif /* SText_h */
