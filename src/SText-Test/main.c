@@ -1,4 +1,3 @@
-#include "glad.h"
 #include <GLFW/glfw3.h>
 #include <stext/SText.h>
 #include <stext/SText_GL.h>
@@ -20,8 +19,6 @@ int main() {
 	glfwSwapInterval(1);
 	glfwMakeContextCurrent(window);
 	
-	gladLoadGLLoader(glfwGetProcAddress);
-	
 	stInitGL(glfwGetProcAddress);
 	
 	glEnable(GL_BLEND);
@@ -36,9 +33,7 @@ int main() {
 		
 		glClear(GL_COLOR_BUFFER_BIT);
 		
-		//stRenderText(font, "testing", 100, 100);
-		
-		stRenderTextGL(fontGL, "The quick brown\nfox jumped over\nthe lazy dog", 0, 600);// + sin(glfwGetTime())*100);
+		stRenderTextGL(fontGL, "The quick brown\nfox jumped over\nthe lazy dog", 0, 600);
 		
 		glfwSwapBuffers(window);
 	}
