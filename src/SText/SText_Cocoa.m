@@ -1,6 +1,14 @@
 #include <stext/SText.h>
 #include <stext/SText_internal.h>
-#include <stext/SText_Cocoa.h>
+
+#import <Foundation/Foundation.h>
+#import <Cocoa/Cocoa.h>
+#import <AppKit/NSApplication.h>
+
+@interface AppDelegate : NSObject <NSApplicationDelegate, NSWindowDelegate>{
+	BOOL running;
+}
+@end
 
 @implementation AppDelegate
 
@@ -120,8 +128,6 @@ SFont* stCreateFont(char* fontFamily, int fontSize) {
 	result->spaceWidth = result->glyphs[' ']->width - 2*result->glyphs['H']->width;
 	
 	result->size = fontSize;
-	
-	printf("space: %f\n", result->spaceWidth);
 	
 	return  result;
 }

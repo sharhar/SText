@@ -1,8 +1,10 @@
 #include "glad.h"
 #include <GLFW/glfw3.h>
 #include <stext/SText.h>
+#include <stext/SText_GL.h>
 
 #include <stdio.h>
+#include <math.h>
 
 int main() {
 	glfwInit();
@@ -13,19 +15,19 @@ int main() {
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	GLFWwindow* window = glfwCreateWindow(800, 600, "SText-Test", NULL, NULL);
 	
-	SFont* font = stCreateFont("Helvetica", 100);
+	SFont* font = stCreateFont("Times New Roman", 72);
 	
 	glfwSwapInterval(1);
 	glfwMakeContextCurrent(window);
 	
 	gladLoadGLLoader(glfwGetProcAddress);
 	
-	stInit(glfwGetProcAddress);
+	stInitGL(glfwGetProcAddress);
 	
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	
-	stFontInitGL(font);
+	SFontGL* fontGL = stCreateFontGL(font);
 	
 	glClearColor(0, 0, 0, 1);
 	
@@ -36,7 +38,7 @@ int main() {
 		
 		//stRenderText(font, "testing", 100, 100);
 		
-		stRenderText(font, "The quick brown\nfox jumped over\nthe lazy dog", 50, 300);
+		stRenderTextGL(fontGL, "The quick brown\nfox jumped over\nthe lazy dog", 0, 600);// + sin(glfwGetTime())*100);
 		
 		glfwSwapBuffers(window);
 	}
