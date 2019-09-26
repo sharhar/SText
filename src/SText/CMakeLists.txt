@@ -1,25 +1,19 @@
 cmake_minimum_required(VERSION 2.8.11)
 
 file(GLOB_RECURSE STEXT_HEADERS "${CMAKE_SOURCE_DIR}/include/*.h")
-#file(GLOB_RECURSE STEXT_SRC *.m)
-
-#add_library(SText ${STEXT_HEADERS} ${STEXT_SRC})
 
 if(APPLE)
 	add_library(SText ${STEXT_HEADERS} 
 			SText_Cocoa.m
-			SText_Glyph.c
-			SText.c)
+			SText_Utils.c
+			SText_GL.c)
 	set(STEXT_LIBRARIES SText PARENT_SCOPE)
 elseif(MSVC)
-#	add_library(SWin ${SWIN_HEADERS}
-#			Win32/SWin_Win32_GL.c
-#			Win32/SWin_Win32_Thread.c
-#			Win32/SWin_Win32_VK.c
-#			Win32/SWin_Win32_Window.c
-#			Win32/SWin_Win32_Utils.c
-#			SWin_Utils.c)
-#	set(SWIN_LIBRARIES SWin PARENT_SCOPE)
+	add_library(SText ${STEXT_HEADERS} 
+			SText_Win32.c
+			SText_Utils.c
+			SText_GL.c)
+	set(STEXT_LIBRARIES SText PARENT_SCOPE)
 else()
 #	add_library(SWin ${SWIN_HEADERS}
 #			GLX/SWin_GLX.c
