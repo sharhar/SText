@@ -26,4 +26,8 @@ else()
 #	set(SWIN_LIBRARIES SWin -lX11 -ldl -lpthread PARENT_SCOPE)
 endif()
 
-target_include_directories (SText PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../../include)
+set(STEXT_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/../../include CACHE STRING "")
+
+target_include_directories (SText PUBLIC ${STEXT_HEADERS})
+
+
