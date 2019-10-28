@@ -10,6 +10,9 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 option(STEXT_BUILD_TEST "Build the SText-Test project" ON)
 
+add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/src/SText")
+
+if(STEXT_BUILD_TEST)
 set(GLFW_SOURCE_NAME "glfw-3.2")
 set(GLFW_URL "http://downloads.sourceforge.net/project/glfw/glfw/3.2/${GLFW_SOURCE_NAME}.tar.gz?r=https%3A%2F%2Fsourceforge.net%2Fprojects%2Fglfw%2Ffiles%2Fglfw%2F3.2%2F&ts=1470492725&use_mirror=heanet")
 set(GLFW_DOWNLOAD_PATH "${CMAKE_SOURCE_DIR}/${GLFW_SOURCE_NAME}.tar.gz")
@@ -81,8 +84,6 @@ option(GLFW_BUILD_TESTS "Build the GLFW test programs" OFF)
 option(GLFW_BUILD_DOCS "Build the GLFW documentation" OFF)
 
 add_subdirectory("${GLFW_SOURCE_DIR}")
-add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/src/SText")
 
-if(STEXT_BUILD_TEST)
 add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/src/SText-Test")
 endif()
