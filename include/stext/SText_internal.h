@@ -27,5 +27,6 @@ typedef struct _SRawGlyphData {
 } _SRawGlyphData;
 
 SGlyph* __stCreateGlyph(_SRawGlyphData* rawData);
+void __stDestroyGlyph(SGlyph* glyph);
 
 #endif /* SText_internal_h */

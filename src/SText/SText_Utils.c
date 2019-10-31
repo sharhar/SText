@@ -55,3 +55,8 @@ SGlyph* __stCreateGlyph(_SRawGlyphData* rawData) {
 	
 	return result;
 }
+
+void __stDestroyGlyph(SGlyph* glyph) {
+	free(glyph->data);
+	free(glyph);
+}

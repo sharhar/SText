@@ -1,10 +1,3 @@
-//
-//  SText_Renderer.c
-//  SText
-//
-//  Created by Shahar Sandhaus on 9/22/19.
-//
-
 #include <stext/SText.h>
 #include <stext/SText_GL.h>
 #include <stext/SText_internal.h>
@@ -33,6 +26,9 @@
 #define GL_VERTEX_SHADER 0x8B31
 #define GL_COMPILE_STATUS 0x8B81
 #define GL_INFO_LOG_LENGTH 0x8B84
+#define GL_BLEND 0x0BE2
+#define GL_SRC_ALPHA 0x0302
+#define GL_ONE_MINUS_SRC_ALPHA 0x0303
 
 typedef void (*pfnGlGenTextures)(int n, unsigned int *textures);
 typedef void (*pfnGlBindTexture)(unsigned int target, unsigned int texture);
@@ -68,6 +64,9 @@ typedef void (*pfnGlUniform4f)(int location, float v0, float v1, float v2, float
 typedef void (*pfnGlEnableVertexAttribArray)(unsigned int index);
 typedef void (*pfnGlDrawArrays)(unsigned int mode, int first, int count);
 
+typedef void (*pfnGlEnable)(unsigned int cap);
+typedef void (*pfnGlBlendFunc)(unsigned int sfactor, unsigned int dfactor);
+
 pfnGlGenTextures __glGenTextures = 0;
 pfnGlBindTexture __glBindTexture = 0;
 pfnGlTexParameteri __glTexParameteri = 0;
@@ -102,6 +101,9 @@ pfnGlUniform4f __glUniform4f = 0;
 pfnGlEnableVertexAttribArray __glEnableVertexAttribArray = 0;
 pfnGlDrawArrays __glDrawArrays = 0;
 
+pfnGlEnable __glEnable = 0;
+pfnGlBlendFunc __glBlendFunc = 0;
+
 unsigned int __rectVAO;
 unsigned int __rectVBO1;
 unsigned int __rectVBO2;
@@ -113,7 +115,7 @@ unsigned int __shaderProgram;
 unsigned int __screenLoc;
 unsigned int __transLoc;
 
-void stInitGL(stPfnGetProdAdressGL gl_func) {
+void stInitGL(stPfnGetProcAdressGL gl_func) {
 	__glGenTextures = gl_func("glGenTextures");
 	__glBindTexture = gl_func("glBindTexture");
 	__glTexParameteri = gl_func("glTexParameteri");
@@ -147,6 +149,12 @@ void stInitGL(stPfnGetProdAdressGL gl_func) {
 	
 	__glEnableVertexAttribArray = gl_func("glEnableVertexAttribArray");
 	__glDrawArrays = gl_func("glDrawArrays");
+	
+	__glEnable = gl_func("glEnable");
+	__glBlendFunc = gl_func("glBlendFunc");
+	
+	__glEnable(GL_BLEND);
+	__glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	
 	float vects[] = {
 		0, 0,
@@ -295,10 +303,10 @@ void stRenderTextGL(SFontGL* fontGL, const char* text, float posx, float posy) {
 			continue;
 		}
 		
-		glyph = fontGL->font->glyphs[(int)text[i]];
+		glyph = fontGL->font->glyphs[(int)text[i] - fontGL->font->firstChar];
 		
 		__glActiveTexture(GL_TEXTURE0);
-		__glBindTexture(GL_TEXTURE_2D, fontGL->GLTexIDs[(int)text[i]]);
+		__glBindTexture(GL_TEXTURE_2D, fontGL->GLTexIDs[(int)text[i] - fontGL->font->firstChar]);
 		
 		float x = xOff + posx + glyph->bearingX;
 		float y = posy - glyph->bearingY - glyph->height - yOff;
@@ -318,11 +326,12 @@ void stRenderTextGL(SFontGL* fontGL, const char* text, float posx, float posy) {
 SFontGL* stCreateFontGL(SFont* font) {
 	SFontGL* result = (SFontGL*)malloc(sizeof(SFontGL));
 	
-	result->GLTexIDs = malloc(sizeof(unsigned int)*255);
+	result->GLTexIDs = malloc(sizeof(unsigned int)*(font->lastChar - font->firstChar));
 	result->font = font;
 	
-	for(int i = 33; i < 127; i++) {
-		__glGenTextures(1, &result->GLTexIDs[i]);
+	__glGenTextures(font->lastChar - font->firstChar, result->GLTexIDs);
+	
+	for(int i = 0; i < font->lastChar - font->firstChar; i++) {
 		__glBindTexture(GL_TEXTURE_2D, result->GLTexIDs[i]);
 		
 		__glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -345,29 +354,6 @@ SFontGL* stCreateFontGL(SFont* font) {
 					   font->glyphs[i]->data
 					   );
 	}
-	
-	__glGenTextures(1, &result->GLTexIDs[' ']);
-	__glBindTexture(GL_TEXTURE_2D, result->GLTexIDs[' ']);
-	
-	__glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	__glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	
-	__glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	__glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	
-	__glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-	
-	__glTexImage2D(
-				   GL_TEXTURE_2D,
-				   0,
-				   GL_RGBA,
-				   font->glyphs[' ']->width,
-				   font->glyphs[' ']->height,
-				   0,
-				   GL_RGBA,
-				   GL_UNSIGNED_BYTE,
-				   font->glyphs[' ']->data
-				   );
 	
 	__glBindTexture(GL_TEXTURE_2D, 0);
 	

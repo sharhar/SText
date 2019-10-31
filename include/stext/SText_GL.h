@@ -13,9 +13,9 @@ typedef struct SFontGL {
 	SFont* font;
 } SFontGL;
 
-typedef void* (*stPfnGetProdAdressGL)(char* name);
+typedef void* (*stPfnGetProcAdressGL)(char* name);
 
-void stInitGL(stPfnGetProdAdressGL gl_func);
+void stInitGL(stPfnGetProcAdressGL gl_func);
 SFontGL* stCreateFontGL(SFont* font);
 void stRenderTextGL(SFontGL* fontGL, const char* text, float posx, float posy);
 

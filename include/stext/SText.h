@@ -14,6 +14,8 @@ typedef struct SFont {
 	SGlyph** glyphs;
 	int size;
 	float spaceWidth;
+	int firstChar;
+	int lastChar;
 } SFont;
 
 char** stGetAllFonts();
